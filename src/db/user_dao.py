@@ -20,3 +20,8 @@ def get_user_by_username(username):
             return cursor.fetchone()  # DictCursor 덕분에 딕셔너리로 리턴됨
     finally:
         conn.close()
+
+# --- 아래 함수를 추가해 주세요 ---
+# auth.py에서 요구하는 get_user 함수 (username 기준 조회)
+def get_user(username):
+    return get_user_by_username(username)
