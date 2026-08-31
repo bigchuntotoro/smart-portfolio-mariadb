@@ -4,7 +4,7 @@ pipeline {
 
     environment {
         // 1. 새 프로젝트 경로 및 PM2 프로세스명 설정
-        PROJECT_NAME = 'new-portfolio-ai'
+        PROJECT_NAME = 'smart-portfolio-mariadb'
         DEPLOY_DIR = "/home/totoro/Pythonproject/${env.PROJECT_NAME}"
         PYTHON_BIN = 'python3'
         APP_PORT = '8501'
