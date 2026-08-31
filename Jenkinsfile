@@ -7,7 +7,7 @@ pipeline {
         PROJECT_NAME = 'smart-portfolio-mariadb'
         DEPLOY_DIR = "/home/totoro/Pythonproject/${env.PROJECT_NAME}"
         PYTHON_BIN = 'python3'
-        APP_PORT = '8501'
+        APP_PORT = '8502'
         PATH = "/usr/local/bin:/usr/bin:/bin:${env.PATH}"
     }
 
