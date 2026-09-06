@@ -89,12 +89,11 @@ pipeline {
                         echo "Deploying .env"
                         echo "=============================================="
 
-                        sudo install \
-                            -o totoro \
-                            -g totoro \
-                            -m 600 \
-                            "${SECRET_ENV}" \
-                            "${DEPLOY_DIR}/.env"
+                        sudo cp "${SECRET_ENV}" "${DEPLOY_DIR}/.env"
+
+                        sudo chown totoro:totoro "${DEPLOY_DIR}/.env"
+
+                        sudo chmod 600 "${DEPLOY_DIR}/.env"
 
                         echo ".env deployed successfully."
 
