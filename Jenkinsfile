@@ -85,16 +85,21 @@ pipeline {
                     sh '''
                         set -e
 
-                        cd "${DEPLOY_DIR}"
-
                         echo "=============================================="
                         echo "Deploying .env"
                         echo "=============================================="
 
-                        cp "${SECRET_ENV}" .env
-                        chmod 600 .env
+                        sudo install \
+                            -o totoro \
+                            -g totoro \
+                            -m 600 \
+                            "${SECRET_ENV}" \
+                            "${DEPLOY_DIR}/.env"
 
-                        echo ".env deployed."
+                        echo ".env deployed successfully."
+
+                        echo "Checking .env permission..."
+                        ls -l "${DEPLOY_DIR}/.env"
                     '''
                 }
             }
