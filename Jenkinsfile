@@ -32,7 +32,15 @@ pipeline {
                         --exclude='.git' \
                         --exclude='__pycache__' \
                         --exclude='*.pyc' \
+                        --exclude='logs/' \
                         ./ "${DEPLOY_DIR}/"
+
+                    echo "Creating logs directory..."
+                    mkdir -p "${DEPLOY_DIR}/logs"
+
+                    echo "Fixing logs ownership..."
+                    sudo chown -R totoro:totoro "${DEPLOY_DIR}/logs"
+                    sudo chmod 775 "${DEPLOY_DIR}/logs"
 
                     echo "File sync completed."
                 '''
