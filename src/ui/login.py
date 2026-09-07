@@ -9,7 +9,11 @@ def show_login(cookies):
     with st.form("login_form"):
         username = st.text_input("아이디")
         password = st.text_input("비밀번호", type="password")
-        submitted = st.form_submit_button("로그인", type="primary", use_container_width=True)
+        submitted = st.form_submit_button(
+            "로그인",
+            type="primary",
+            width="stretch",
+        )
 
     if not submitted:
         return
@@ -34,7 +38,9 @@ def show_login(cookies):
         st.error("❌ 아이디 또는 비밀번호가 올바르지 않습니다.")
         return
 
-    # 이전 사용자 상태 제거 (연금 대시보드 키 포함, session_keys.py 참조)
+    # ============================================================
+    # 이전 사용자 상태 제거
+    # ============================================================
     clear_user_session_keys()
 
     access_token = result.get("access_token")
@@ -56,10 +62,16 @@ def show_login(cookies):
         st.error("❌ 잘못된 사용자 ID입니다.")
         return
 
+    # ============================================================
+    # 로그인 세션 저장
+    # ============================================================
     st.session_state["access_token"] = access_token
     st.session_state["user_id"] = user_id
     st.session_state["login_user"] = username
 
+    # ============================================================
+    # Refresh Token 저장
+    # ============================================================
     try:
         cookies.set("refresh_token", refresh_token)
         cookies.set("user_id", str(user_id))
@@ -67,7 +79,11 @@ def show_login(cookies):
         st.error(f"❌ Refresh Token 쿠키 저장 실패: {e}")
         return
 
+    # ============================================================
+    # 로그인 성공 → 즉시 대시보드로 이동
+    # ============================================================
     st.success(f"✅ {username}님 환영합니다!")
 
-    if st.button("🚀 대시보드로 이동", type="primary", use_container_width=True):
-        st.rerun()
+    # 현재 Streamlit 화면을 즉시 다시 실행
+    # → 로그인 상태를 감지한 메인 화면에서 대시보드 표시
+    st.rerun()
