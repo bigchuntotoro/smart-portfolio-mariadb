@@ -233,22 +233,46 @@ def _get_global_auto_remaining_period(year: int, start_month: int, end_month: in
 # Streamlit 데이터 에디터 및 UI 컴포넌트
 # =========================================================
 
-def create_account_df(account_name: str, year: int, start_month: int, end_month: int) -> pd.DataFrame:
+def create_account_df(
+    account_name: str,
+    year: int,
+    start_month: int,
+    end_month: int,
+) -> pd.DataFrame:
+
     month_cols = [f"{m}월" for m in range(1, 13)]
     rows = []
 
     for cfg in ETF_CONFIG[account_name]:
-        monthly_values = _get_etf_monthly_values(year, cfg["key"])
-        plan = _get_auto_etf_plan(year, cfg, start_month, end_month)
+
+        monthly_values = _get_etf_monthly_values(
+            year,
+            cfg["key"],
+        )
+
+        plan = _get_auto_etf_plan(
+            year,
+            cfg,
+            start_month,
+            end_month,
+        )
 
         row = {
             "ETF종목명": cfg["name"],
             "목표 비중": f"{int(cfg['weight'] * 100)}%",
             "연 목표금액": cfg["target"],
+
+            # 자동 월 필요액
             "자동 월 필요액": plan["monthly_required"],
+
+            # ★ 추가
+            # 1~12월 실제 납입액 총합
+            "총 합계": sum(monthly_values),
         }
+
         for idx, col in enumerate(month_cols):
             row[col] = monthly_values[idx]
+
         rows.append(row)
 
     return pd.DataFrame(rows)
@@ -256,15 +280,41 @@ def create_account_df(account_name: str, year: int, start_month: int, end_month:
 
 def _get_column_config() -> dict:
     config = {
-        "ETF종목명": st.column_config.TextColumn("ETF종목명", width="medium"),
-        "목표 비중": st.column_config.TextColumn("목표 비중", width="small"),
-        "연 목표금액": st.column_config.NumberColumn("연 목표금액", format="%,d원"),
-        "자동 월 필요액": st.column_config.NumberColumn("자동 월 필요액", format="%,d원"),
+        "ETF종목명": st.column_config.TextColumn(
+            "ETF종목명",
+            width="medium",
+        ),
+
+        "목표 비중": st.column_config.TextColumn(
+            "목표 비중",
+            width="small",
+        ),
+
+        "연 목표금액": st.column_config.NumberColumn(
+            "연 목표금액",
+            format="%,d원",
+        ),
+
+        "자동 월 필요액": st.column_config.NumberColumn(
+            "자동 월 필요액",
+            format="%,d원",
+        ),
+
+        # ★ 추가
+        "총 합계": st.column_config.NumberColumn(
+            "총 합계",
+            format="%,d원",
+        ),
     }
+
     for m in range(1, 13):
         config[f"{m}월"] = st.column_config.NumberColumn(
-            f"{m}월", min_value=0, step=10000, format="%,d원"
+            f"{m}월",
+            min_value=0,
+            step=10000,
+            format="%,d원",
         )
+
     return config
 
 
@@ -288,7 +338,13 @@ def _render_account_editor_section(account: str, icon: str, target_desc: str, ye
         df,
         key=f"editor_{account}_{year}",
         hide_index=True,
-        disabled=["ETF종목명", "목표 비중", "연 목표금액", "자동 월 필요액"],
+        disabled=[
+            "ETF종목명",
+            "목표 비중",
+            "연 목표금액",
+            "자동 월 필요액",
+            "총 합계",
+        ],
         column_config=_get_column_config(),
         use_container_width=True,
     )
