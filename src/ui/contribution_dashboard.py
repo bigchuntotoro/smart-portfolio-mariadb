@@ -346,7 +346,7 @@ def _render_account_editor_section(account: str, icon: str, target_desc: str, ye
             "총 합계",
         ],
         column_config=_get_column_config(),
-        use_container_width=True,
+        width='stretch',
     )
     _update_monthly_data_from_editor(year, account, edited_df)
 
@@ -386,7 +386,7 @@ def _render_remaining_etf_table(year: int, account: str, start_month: int, end_m
     st.dataframe(
         pd.DataFrame(table_rows),
         hide_index=True,
-        use_container_width=True,
+        width='stretch',
         column_config={
             "ETF 종목": st.column_config.TextColumn("ETF 종목", width="large"),
             "목표 비중": st.column_config.TextColumn("목표 비중", width="small"),
@@ -538,7 +538,7 @@ def _render_year_dashboard(year: int, user_id: str):
     # 저장 버튼 및 로직
     save_col, _ = st.columns([1, 2])
     with save_col:
-        if st.button(f"💾 {year}년 납입 계획 저장하기", type="primary", use_container_width=True, key=f"save_button_{year}"):
+        if st.button(f"💾 {year}년 납입 계획 저장하기", type="primary", width='stretch', key=f"save_button_{year}"):
             if not user_id:
                 st.error("❌ 로그인 정보가 없습니다.")
             else:
