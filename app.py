@@ -74,7 +74,6 @@ def is_authenticated() -> bool:
 
     token = st.session_state.get("access_token")
     user_id = st.session_state.get("user_id")
-
     # =====================================================
     # 1. Access Token이 없는 경우 Refresh Token으로 재발급 시도
     # =====================================================

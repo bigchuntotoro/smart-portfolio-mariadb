@@ -1,3 +1,4 @@
+import time
 import streamlit as st
 from src.core.auth import login
 from src.core.session_keys import clear_user_session_keys
@@ -83,7 +84,8 @@ def show_login(cookies):
     # 로그인 성공 → 즉시 대시보드로 이동
     # ============================================================
     st.success(f"✅ {username}님 환영합니다!")
-
+    #컴포넌트가 실제로 쓸 시간을 줌
+    time.sleep(0.3)
     # 현재 Streamlit 화면을 즉시 다시 실행
     # → 로그인 상태를 감지한 메인 화면에서 대시보드 표시
     st.rerun()
