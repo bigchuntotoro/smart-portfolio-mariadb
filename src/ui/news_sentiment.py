@@ -1,8 +1,9 @@
-import pandas as pd
-import streamlit as st
 import os
+import time
 from google import genai
 from google.genai import types
+import pandas as pd
+import streamlit as st
 
 
 def show_news_sentiment_page(user_id: int, cookies=None):
@@ -40,7 +41,9 @@ def show_news_sentiment_page(user_id: int, cookies=None):
 
     st.title("📰 AI 실시간 뉴스 & 감성 분석 대시보드")
     st.markdown(
-        "Google Search 웹 검색 도구와 Gemini AI를 연동하여 선택한 종목의 최근 이슈와 뉴스 동향을 수집하고, **종합 감성 분석(Sentiment Analysis)** 및 투자 의견을 제공합니다."
+        "Google Search 웹 검색 도구와 Gemini AI를 연동하여 선택한 종목의 최근"
+        " 이슈와 뉴스 동향을 수집하고, **종합 감성 분석(Sentiment"
+        " Analysis)** 및 투자 의견을 제공합니다."
     )
     st.markdown("")
 
@@ -73,12 +76,14 @@ def show_news_sentiment_page(user_id: int, cookies=None):
         gemini_api_key = os.getenv("GEMINI_API_KEY")
         if not gemini_api_key:
             st.error(
-                "⚠️ GEMINI_API_KEY 환경변수가 설정되지 않아 AI 분석을 수행할 수 없습니다."
+                "⚠️ GEMINI_API_KEY 환경변수가 설정되지 않아 AI 분석을 수행할 수"
+                " 없습니다."
             )
             return
 
         with st.spinner(
-            f"🔍 Google Search로 '{selected_stock_name}' 관련 최신 뉴스를 수집하고 Gemini가 분석 중입니다..."
+            f"🔍 Google Search로 '{selected_stock_name}' 관련 최신 뉴스를"
+            " 수집하고 Gemini가 분석 중입니다..."
         ):
             try:
                 client = genai.Client(api_key=gemini_api_key)
@@ -102,15 +107,40 @@ def show_news_sentiment_page(user_id: int, cookies=None):
                 4. **향후 전망 및 대응 전략**: 단기/중장기 관점에서의 투자 참고 조언.
                 """
 
-                # 모델 호출 시 Google Search 툴 적용
-                response = client.models.generate_content(
-                    model="gemini-3.8-flash",
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        tools=[search_tool],
-                        temperature=0.3,
-                    ),
-                )
+                max_retries = 3
+                delay = 3
+                response = None
+
+                for attempt in range(max_retries):
+                    try:
+                        response = client.models.generate_content(
+                            model="gemini-3.8-flash",
+                            contents=prompt,
+                            config=types.GenerateContentConfig(
+                                tools=[search_tool],
+                                temperature=0.3,
+                            ),
+                        )
+                        break
+                    except Exception as e:
+                        err_msg = str(e)
+                        if (
+                            "429" in err_msg
+                            or "RESOURCE_EXHAUSTED" in err_msg
+                            or "503" in err_msg
+                        ):
+                            if attempt < max_retries - 1:
+                                time.sleep(delay)
+                                delay *= 2  # 백오프 지연 시간 증가
+                                continue
+                        raise e
+
+                if not response:
+                    st.error(
+                        "⚠️ API 요청 횟수 한도를 초과(429 오류)했거나 서버가 혼잡합니다."
+                        " 잠시 후 다시 시도해 주세요."
+                    )
+                    return
 
                 st.session_state["last_news_report"] = response.text
 
@@ -131,7 +161,21 @@ def show_news_sentiment_page(user_id: int, cookies=None):
                 st.session_state["last_grounding_sources"] = grounding_chunks
 
             except Exception as e:
-                st.error(f"⚠️ 뉴스 분석 중 오류가 발생했습니다. 상세 내용: `{str(e)}`")
+                error_str = str(e)
+                if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
+                    st.error(
+                        "🚨 **API 할당량 초과 (Rate Limit Exceeded)**\n\n현재"
+                        " 사용 중인 Gemini API 키의 요금제 한도(Quotas)를"
+                        " 초과하였습니다. 무료 버전(Free Tier)을 사용 중이신 경우 잠시"
+                        " 후(몇 분 뒤) 다시 시도하시거나, Google AI Studio에서 사용량을"
+                        " 확인해 주세요.\n\n상세 내용: "
+                        f"`{error_str}`"
+                    )
+                else:
+                    st.error(
+                        "⚠️ 뉴스 분석 중 오류가 발생했습니다. 상세 내용:"
+                        f" `{error_str}`"
+                    )
                 return
 
     # 결과가 세션에 있으면 출력
