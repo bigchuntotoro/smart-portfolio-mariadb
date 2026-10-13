@@ -235,7 +235,7 @@ def show_market_dashboard(user_id: int, cookies=None):
         "TIGER 미국S&P500": "360750",
         "KODEX 미국나스닥100": "379800",
         "KODEX 미국배당다우존스": "458730",
-        "KODEX 주주환원고배당주": "278530",
+        "KODEX 주주환원고배당주": "0153K0",
         "KODEX 200타겟위클리커버드콜": "498400",
         "KODEX 단기채권PLUS": "214980",
     }
