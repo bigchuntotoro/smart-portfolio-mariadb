@@ -9,6 +9,7 @@ from src.ui.login import show_login
 from src.ui.signup import show_signup
 from src.ui.rebalancing import show_rebalancing_dashboard
 from src.ui.simulation import show_asset_simulation
+from src.ui.market_dashboard import show_market_dashboard
 
 # =========================================================
 # 페이지 설정
@@ -54,6 +55,7 @@ for key, value in DEFAULT_SESSION_STATE.items():
 # 사용자 Session 초기화
 # =========================================================
 
+
 def clear_user_session():
     """로그아웃 또는 다른 사용자 로그인 시 이전 사용자의 Session State를 모두 제거합니다."""
     clear_user_session_keys()
@@ -62,6 +64,7 @@ def clear_user_session():
 # =========================================================
 # JWT 인증 확인
 # =========================================================
+
 
 def is_authenticated() -> bool:
     """인증 처리 순서:
@@ -156,6 +159,7 @@ def is_authenticated() -> bool:
 
     return True
 
+
 # =========================================================
 # 로그인 상태 확인
 # =========================================================
@@ -184,6 +188,7 @@ if authenticated:
             "💰 통합 연금 납입 대시보드",
             "⚖️ 포트폴리오 리밸런싱",
             "📊 자산 시뮬레이션",
+            "📈 국내 우량주 실시간 모니터링",
         ],
         key="main_navigation_menu",
     )
@@ -208,6 +213,8 @@ if authenticated:
     elif main_menu == "📊 자산 시뮬레이션":
         show_asset_simulation(user_id=current_user_id, cookies=cookies)
 
+    elif main_menu == "📈 국내 우량주 실시간 모니터링":
+        show_market_dashboard(user_id=current_user_id, cookies=cookies)
 else:
     st.title("💰 Smart Portfolio AI PRO")
     st.caption("연금저축 + IRP 납입 계획 및 포트폴리오 자산 관리")
