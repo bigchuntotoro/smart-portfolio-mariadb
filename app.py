@@ -10,6 +10,7 @@ from src.ui.signup import show_signup
 from src.ui.rebalancing import show_rebalancing_dashboard
 from src.ui.simulation import show_asset_simulation
 from src.ui.market_dashboard import show_market_dashboard
+from src.ui.portfolio_comparison import show_portfolio_comparison_page
 
 # =========================================================
 # 페이지 설정
@@ -189,6 +190,7 @@ if authenticated:
             "⚖️ 포트폴리오 리밸런싱",
             "📊 자산 시뮬레이션",
             "📈 국내 우량주 실시간 모니터링",
+            "⚖️ 포트폴리오 다중 종목 비교",
         ],
         key="main_navigation_menu",
     )
@@ -215,6 +217,9 @@ if authenticated:
 
     elif main_menu == "📈 국내 우량주 실시간 모니터링":
         show_market_dashboard(user_id=current_user_id, cookies=cookies)
+
+    elif main_menu == "⚖️ 포트폴리오 다중 종목 비교":  # 👈 이 분기 처리를 추가합니다.
+        show_portfolio_comparison_page(user_id=current_user_id, cookies=cookies)
 else:
     st.title("💰 Smart Portfolio AI PRO")
     st.caption("연금저축 + IRP 납입 계획 및 포트폴리오 자산 관리")
