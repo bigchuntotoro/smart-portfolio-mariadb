@@ -8,8 +8,8 @@ def show_login(cookies):
     st.subheader("🔐 로그인")
 
     with st.form("login_form"):
-        username = st.text_input("아이디")
-        password = st.text_input("비밀번호", type="password")
+        username = st.text_input("아이디", value="totoro")
+        password = st.text_input("비밀번호", type="password", value="1q2w3e4r")
         submitted = st.form_submit_button(
             "로그인",
             type="primary",
@@ -74,7 +74,13 @@ def show_login(cookies):
     # Refresh Token 저장
     # ============================================================
     try:
-        cookies.set("refresh_token", refresh_token, secure=False, same_site="Lax",  path="/",)
+        cookies.set(
+            "refresh_token",
+            refresh_token,
+            secure=False,
+            same_site="Lax",
+            path="/",
+        )
         cookies.set("user_id", str(user_id))
     except Exception as e:
         st.error(f"❌ Refresh Token 쿠키 저장 실패: {e}")
@@ -84,7 +90,7 @@ def show_login(cookies):
     # 로그인 성공 → 즉시 대시보드로 이동
     # ============================================================
     st.success(f"✅ {username}님 환영합니다!")
-    #컴포넌트가 실제로 쓸 시간을 줌
+    # 컴포넌트가 실제로 쓸 시간을 줌
     time.sleep(0.3)
     # 현재 Streamlit 화면을 즉시 다시 실행
     # → 로그인 상태를 감지한 메인 화면에서 대시보드 표시
